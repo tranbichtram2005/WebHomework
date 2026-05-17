@@ -1,23 +1,22 @@
 <?php
+session_start();
 require_once("db_module.php");
-require_once("_head.php");
 $link = NULL; taoKetNoi($link);
-renderHead('Xóa danh mục');
-include_once("task.php");
-renderSidebar();
+$page_title = 'Xóa danh mục';
+include_once("layout_top.php");
 ?>
-<div class="section-title">Xóa danh mục</div>
-<div class="list-action">
+<div class="section-title">🗑️ Xóa danh mục</div>
+<div class="list-action" style="max-width: 600px;">
 <?php
 $result = chayTruyVanTraVeDL($link, "SELECT * FROM tbl_danhmuc");
 while ($rows = mysqli_fetch_assoc($result)): ?>
-    <div class="list-item">
-        <span><i class="bi bi-folder me-2" style="color:var(--text-muted)"></i><?= htmlspecialchars($rows['ten']) ?></span>
-        <a href="./xulyxoadm.php?dm=<?= $rows['id'] ?>" class="btn-del"
+    <div style="display:flex; justify-content:space-between; align-items:center; padding: 15px; border-bottom: 1px solid var(--border); background: #f9fafb; margin-bottom: 10px; border-radius: 8px;">
+        <span style="font-weight: 600;">📁 <?= htmlspecialchars($rows['ten']) ?></span>
+        <a href="./xulyxoadm.php?dm=<?= $rows['id'] ?>" class="btn-action btn-delete"
            onclick="return confirm('Xóa danh mục «<?= htmlspecialchars($rows['ten']) ?>»?\nCác sản phẩm thuộc DM này cũng bị ảnh hưởng.')">
-           <i class="bi bi-trash3"></i> Xóa
+           Xóa
         </a>
     </div>
 <?php endwhile; ?>
 </div>
-<?php renderFoot(); giaiPhongBoNho($link, $result); ?>
+<?php include_once("layout_bottom.php"); giaiPhongBoNho($link, $result); ?>

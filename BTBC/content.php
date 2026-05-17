@@ -8,7 +8,8 @@ $params = "";
 
 if (isset($_GET['keyword'])) {
     $kw = mysqli_real_escape_string($link, $_GET['keyword']);
-    $sql_count .= " and ten like '%$kw%'";
+    // NÂNG CẤP: Tìm kiếm trong cả 'ten' (Tên) HOẶC 'mota' (Mô tả)
+    $sql_count .= " and (ten like '%$kw%' or mota like '%$kw%')";
     $params .= "&keyword=" . urlencode($_GET['keyword']);
 }
 if (isset($_GET['dm'])) {
@@ -52,6 +53,11 @@ if (mysqli_num_rows($res_data) > 0) {
         echo "</div>";
     }
 } else {
-    echo "<div style='padding:30px; text-align:center; color:#71717a;'>Không tìm thấy sản phẩm nào phù hợp.</div>";
+    // UI báo không tìm thấy sản phẩm xịn xò hơn
+    echo "<div style='padding:50px 20px; text-align:center; background:#f9fafb; border-radius:15px; margin-top: 20px; border: 1px dashed var(--border);'>
+            <div style='font-size: 40px; margin-bottom: 15px;'>🔍</div>
+            <h3 style='color:#444; margin-bottom:10px;'>Không tìm thấy sản phẩm nào!</h3>
+            <p style='color:#888;'>Rất tiếc, không có kết quả phù hợp với từ khóa của bạn. Thử tìm bằng các từ khóa khác xem sao nhé.</p>
+          </div>";
 }
 ?>
