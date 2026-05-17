@@ -1,6 +1,5 @@
-</div><!-- /content -->
-    </div><!-- /d-flex -->
-</div><!-- /container -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+</div> </div> <div id="footer">
+        <p>© 2026 CellphoneS Website - Hệ thống thực hành phát triển ứng dụng Web</p>
+    </div>
+</div> </body>
 </html>

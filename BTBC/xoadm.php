@@ -1,36 +1,23 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" href="style.css" />
-<title>Untitled Document</title>
-</head>
-<body>
 <?php
-    require_once("db_module.php");
-    $link = NULL;
-    taoKetNoi($link);
+require_once("db_module.php");
+require_once("_head.php");
+$link = NULL; taoKetNoi($link);
+renderHead('Xóa danh mục');
+include_once("task.php");
+renderSidebar();
 ?>
-<div id="container">
-    <div id="banner"></div>
-    <div id="menu"><?php include_once("task.php");?></div>
-    <div id="lmenu">
-        <ul>
-        <?php include_once("menu.php"); ?>
-        </ul>
+<div class="section-title">Xóa danh mục</div>
+<div class="list-action">
+<?php
+$result = chayTruyVanTraVeDL($link, "SELECT * FROM tbl_danhmuc");
+while ($rows = mysqli_fetch_assoc($result)): ?>
+    <div class="list-item">
+        <span><i class="bi bi-folder me-2" style="color:var(--text-muted)"></i><?= htmlspecialchars($rows['ten']) ?></span>
+        <a href="./xulyxoadm.php?dm=<?= $rows['id'] ?>" class="btn-del"
+           onclick="return confirm('Xóa danh mục «<?= htmlspecialchars($rows['ten']) ?>»?\nCác sản phẩm thuộc DM này cũng bị ảnh hưởng.')">
+           <i class="bi bi-trash3"></i> Xóa
+        </a>
     </div>
-    <div id="content">
-        <?php
-            if(!isset($_GET['dm'])){
-                $result = chayTruyVanTraVeDL($link, "select * from tbl_danhmuc");
-                while($rows=mysqli_fetch_assoc($result)){
-                    echo "<div><a href='./xulyxoadm.php?dm=".$rows['id']."'>Xóa</a> <span>".$rows['ten']."</span></div>";
-                }
-            }
-        ?>
-    </div>
+<?php endwhile; ?>
 </div>
-<?php
-    giaiPhongBoNho($link, $result);
-?>
-</body>
-</html>
+<?php renderFoot(); giaiPhongBoNho($link, $result); ?>

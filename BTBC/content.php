@@ -1,39 +1,57 @@
 <?php
-$page = isset($_GET['page'])?$_GET['page']:1;
-$page = is_numeric($page)?$page:1;
-$from = ($page-1)*SO_SP_TREN_TRANG;
-//Xác định tổng số sản phẩm
-if(isset($_GET['dm']))
-    $result = chayTruyVanTraVeDL($link, "select count(*) from tbl_sanpham where id_dm = ".$_GET["dm"]);
-else
-    $result = chayTruyVanTraVeDL($link, "select count(*) from tbl_sanpham");
-$row = mysqli_fetch_row($result);
-$total = ceil($row[0]/SO_SP_TREN_TRANG);
-//Xác định các sản phẩm sẽ cần hiển thị cho trang hiện tại
-if(isset($_GET['dm']))
-  $result = chayTruyVanTraVeDL($link, "select * from tbl_sanpham where id_dm=".$_GET['dm']." limit ".$from.", ".SO_SP_TREN_TRANG);
-else
-  $result = chayTruyVanTraVeDL($link, "select * from tbl_sanpham limit ".$from.", ".SO_SP_TREN_TRANG);
+$page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? $_GET['page'] : 1;
+$from = ($page - 1) * SO_SP_TREN_TRANG;
 
-while($rows = mysqli_fetch_assoc($result)){
-    echo "  <a href='chitiet.php?sp=".$rows['id']."'><div class='sp'>
-                <h2>".$rows['ten']."</h2>
-                <p>Mô tả: ".$rows['mota']."</p>
-                <p>Giá: ".$rows['gia']."</p>
-            </div></a>";
+// Xây dựng câu lệnh đếm dữ liệu động
+$sql_count = "select count(*) from tbl_sanpham where 1=1";
+$params = "";
+
+if (isset($_GET['keyword'])) {
+    $kw = mysqli_real_escape_string($link, $_GET['keyword']);
+    $sql_count .= " and ten like '%$kw%'";
+    $params .= "&keyword=" . urlencode($_GET['keyword']);
 }
-echo "<br style='clear:both;'/>";
-echo "<div class='pager'>";
-for($i=1; $i<=$total; $i++)
-    if($i!=$page)
-        echo " <a href='./?page=".$i.(isset($_GET['dm'])?"&dm=".$_GET['dm']:"")."'>".$i."</a> ";
-    else
-        echo " <span>$i</span>";
-echo "</div>";
-?>
-<style>
-    .pager{
-        background-color:orange;  padding:3px;
-        text-align:center;  margin-left:5px; word-spacing:10px;
+if (isset($_GET['dm'])) {
+    $dm_id = (int)$_GET['dm'];
+    $sql_count .= " and id_dm = $dm_id";
+    $params .= "&dm=" . $dm_id;
+}
+
+$res_count = chayTruyVanTraVeDL($link, $sql_count);
+$row_count = mysqli_fetch_row($res_count);
+$total_records = $row_count[0];
+$total_pages = ceil($total_records / SO_SP_TREN_TRANG);
+
+// Truy vấn lấy dữ liệu phân trang
+$sql_data = str_replace("count(*)", "*", $sql_count) . " order by id desc limit $from, " . SO_SP_TREN_TRANG;
+$res_data = chayTruyVanTraVeDL($link, $sql_data);
+
+if (mysqli_num_rows($res_data) > 0) {
+    echo "<div class='product-grid'>";
+    while ($row = mysqli_fetch_assoc($res_data)) {
+        ?>
+        <a href="chitiet.php?sp=<?php echo $row['id']; ?>" class="sp">
+            <div>
+                <div class="sp-img-box">📱</div>
+                <h3><?php echo htmlspecialchars($row['ten']); ?></h3>
+                <p class="sp-desc"><?php echo htmlspecialchars($row['mota']); ?></p>
+            </div>
+            <p class="sp-price"><?php echo number_format($row['gia'], 0, ',', '.'); ?> đ</p>
+        </a>
+        <?php
     }
-</style>
+    echo "</div>";
+
+    // Khối phân trang chuẩn giao diện
+    if ($total_pages > 1) {
+        echo "<div class='pager'>";
+        for ($i = 1; $i <= $total_pages; $i++) {
+            if ($i == $page) echo "<span>$i</span>";
+            else echo "<a href='index.php?page=$i$params'>$i</a>";
+        }
+        echo "</div>";
+    }
+} else {
+    echo "<div style='padding:30px; text-align:center; color:#71717a;'>Không tìm thấy sản phẩm nào phù hợp.</div>";
+}
+?>

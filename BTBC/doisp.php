@@ -1,65 +1,72 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" href="style.css" />
-<title>Untitled Document</title>
-</head>
-<body>
 <?php
-    require_once("db_module.php");
-    $link = NULL;
-    taoKetNoi($link);
+session_start();
+require_once("db_module.php");
+
+$link = NULL;
+taoKetNoi($link);
+
+$page_title = "Chỉnh sửa sản phẩm";
+include_once("layout_top.php");
 ?>
-<div id="container">
-    <div id="banner"></div>
-    <div id="menu"><?php include_once("task.php");?></div>
-    <div id="lmenu">
-        <ul>
-        <?php include_once("menu.php"); ?>
-        </ul>
-    </div>
-    <div id="content">
-        <?php
-            if(!isset($_GET['sp'])){
-                $result = chayTruyVanTraVeDL($link, "select * from tbl_sanpham");
-                while($rows=mysqli_fetch_assoc($result)){
-                    echo "<div><a href='./doisp.php?sp=".$rows['id']."'>Sửa</a> <span>".$rows['ten']."</span></div>";
-                }
-            }else{
-                $result = chayTruyVanTraVeDL($link, "select * from tbl_sanpham where id=".$_GET['sp']);
-                $row = mysqli_fetch_row($result);
-        ?>
-        <form method="post" action="xulydoisp.php">
-            <label for="iddm">Chọn DM:</label>
+
+<div class="section-title">🛠️ Quản lý & Chỉnh sửa sản phẩm</div>
+
+<?php
+if (!isset($_GET['sp'])) {
+    // Nếu chưa chọn thiết bị cụ thể, đổ bảng danh sách
+    $result = chayTruyVanTraVeDL($link, "select * from tbl_sanpham order by id desc");
+    echo "<table class='cps-table'>
+            <thead><tr><th>Tên thiết bị</th><th>Giá</th><th>Hành động</th></tr></thead><tbody>";
+    while ($rows = mysqli_fetch_assoc($result)) {
+        echo "<tr>
+                <td style='font-weight:500;'>" . htmlspecialchars($rows['ten']) . "</td>
+                <td style='color:var(--cps-red); font-weight:600;'>" . number_format($rows['gia'], 0, ',', '.') . " đ</td>
+                <td><a href='doisp.php?sp=" . $rows['id'] . "' class='btn-action btn-edit'>Sửa thông tin</a></td>
+              </tr>";
+    }
+    echo "</tbody></table>";
+} else {
+    // Nếu đã chọn, đổ dữ liệu vào Form
+    $sp_id = (int)$_GET['sp'];
+    $result = chayTruyVanTraVeDL($link, "select * from tbl_sanpham where id=$sp_id");
+    $row = mysqli_fetch_row($result);
+    ?>
+    <form method="post" action="xulydoisp.php">
+        <input type="hidden" value="<?php echo $row[0]; ?>" name="idsp">
+        
+        <div class="form-group">
+            <label>Phân mục nhóm sản phẩm:</label>
             <select name="iddm">
                 <?php
-                    $link = NULL;
-                    taoKetNoi($link);
-                    $result = chayTruyVanTraVeDL($link, "select * from  tbl_danhmuc");
-                    while($rows=mysqli_fetch_assoc($result)){
-                        $select = ($rows['id']==$row[4])?" selected='selected' ":"";
-                        echo "<option $select value='".$rows['id']."'>".$rows['ten']."</option>";
-                    }
+                $res_dm = chayTruyVanTraVeDL($link, "select * from tbl_danhmuc");
+                while ($r_dm = mysqli_fetch_assoc($res_dm)) {
+                    $select = ($r_dm['id'] == $row[4]) ? "selected" : "";
+                    echo "<option $select value='" . $r_dm['id'] . "'>" . htmlspecialchars($r_dm['ten']) . "</option>";
+                }
                 ?>
-            </select><br/>
-            <label for="tensp">Tên SP:</label>
-            <input type="text" name="tensp" value="<?php echo $row[1] ?>"><br/>
-            <label for="mota">Mô tả:</label>
-            <textarea name="mota" style="width:300px; height:200px; text-align:left;">
-            <?php echo $row[2]?>
-            </textarea><br/>
-            <label for="gia">Giá:</label>
-            <input type="number" name="gia" value="<?php echo $row[3]?>"><br/>
-            <input type="hidden" value="<?php echo $row[0]?>" name="idsp">
-            <input type="submit" value="Lưu SP">
-        </form>
-        <?php
-            }
-        ?>
-    </div>
-</div>
-<?php
-    giaiPhongBoNho($link, $result);
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Tên gọi sản phẩm:</label>
+            <input type="text" name="tensp" value="<?php echo htmlspecialchars($row[1]); ?>" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Mô tả chi tiết tính năng:</label>
+            <textarea name="mota" rows="5" required><?php echo htmlspecialchars($row[2]); ?></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Giá bán niêm yết (đ):</label>
+            <input type="number" name="gia" value="<?php echo $row[3]; ?>" required>
+        </div>
+        
+        <input type="submit" value="Lưu thay đổi sản phẩm" class="btn-submit">
+    </form>
+    <?php
+}
+
+include_once("layout_bottom.php");
+giaiPhongBoNho($link, NULL);
 ?>
-</body>
-</html>

@@ -1,11 +1,7 @@
-<a href="./">Home</a> |
-<a href="./themdm.php">Thêm DM</a> |
-<a href="./themsp.php">Thêm SP</a> |
-<a href="./doidm.php">Đổi Tên DM</a> |
-<a href="./xoadm.php">Xóa DM</a> |
-<a href="./doisp.php">Đổi TT SP</a> |
-<a href="./xoasp.php">Xóa SP</a>
-<form style='float:right; margin:-3px 0px 0px 0px;' method="get" action="timkiem.php">
-    <input type="text" name="keyword" />
-    <input type="submit" value="Tìm Kiếm" />
-</form>
+<a href="index.php" style="padding: 8px 12px; background: #f3f4f6; color: #333; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">🏠 Trang Chủ</a>
+<a href="themdm.php" style="padding: 8px 12px; background: #f3f4f6; color: #333; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">✨ Thêm Danh Mục</a>
+<a href="themsp.php" style="padding: 8px 12px; background: #f3f4f6; color: #333; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">➕ Thêm Sản Phẩm</a>
+<a href="doidm.php" style="padding: 8px 12px; background: #f3f4f6; color: #333; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">✏️ Sửa Danh Mục</a>
+<a href="xoadm.php" style="padding: 8px 12px; background: #f3f4f6; color: #333; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">🗑️ Xóa Danh Mục</a>
+<a href="doisp.php" style="padding: 8px 12px; background: #f3f4f6; color: #333; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">🛠️ Sửa Sản Phẩm</a>
+<a href="xoasp.php" style="padding: 8px 12px; background: #f3f4f6; color: #333; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">❌ Xóa Sản Phẩm</a>

@@ -1,46 +1,44 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" href="style.css" />
-<title>Untitled Document</title>
-</head>
-<body>
 <?php
-    require_once("db_module.php");
-    $link = NULL;
-    taoKetNoi($link);
+session_start();
+require_once("db_module.php");
+
+$link = NULL;
+taoKetNoi($link);
+
+$page_title = "Chỉnh sửa danh mục";
+include_once("layout_top.php");
 ?>
-<div id="container">
-    <div id="banner"></div>
-    <div id="menu"><?php include_once("task.php");?></div>
-    <div id="lmenu">
-        <ul>
-        <?php include_once("menu.php"); ?>
-        </ul>
-    </div>
-    <div id="content">
-        <?php
-            if(!isset($_GET['dm'])){
-                $result = chayTruyVanTraVeDL($link, "select * from tbl_danhmuc");
-                while($rows=mysqli_fetch_assoc($result)){
-                    echo "<div><a href='./doidm.php?dm=".$rows['id']."'>Sửa</a> <span>".$rows['ten']."</span></div>";
-                }
-            }else{
-                $result = chayTruyVanTraVeDL($link, "select * from tbl_danhmuc where id=".$_GET['dm']);
-                $row = mysqli_fetch_row($result);
-        ?>
-        <form method="post" action="xulydoidm.php">
-            <input type="text" value="<?php echo $row[1]?>" name="tendm">
-            <input type="hidden" value="<?php echo $row[0]?>" name="iddm">
-            <input type="submit" value="Lưu">
-        </form>
-        <?php
-            }
-        ?>
-    </div>
-</div>
+
+<div class="section-title">✏️ Cập nhật danh mục hàng hóa</div>
+
 <?php
-    giaiPhongBoNho($link, $result);
+if (!isset($_GET['dm'])) {
+    $result = chayTruyVanTraVeDL($link, "select * from tbl_danhmuc");
+    echo "<table class='cps-table'>
+            <thead><tr><th>Tên danh mục hiện tại</th><th>Thao tác</th></tr></thead><tbody>";
+    while ($rows = mysqli_fetch_assoc($result)) {
+        echo "<tr>
+                <td style='font-weight:600;'>" . htmlspecialchars($rows['ten']) . "</td>
+                <td><a href='doidm.php?dm=" . $rows['id'] . "' class='btn-action btn-edit'>Sửa tên</a></td>
+              </tr>";
+    }
+    echo "</tbody></table>";
+} else {
+    $dm_id = (int)$_GET['dm'];
+    $result = chayTruyVanTraVeDL($link, "select * from tbl_danhmuc where id=$dm_id");
+    $row = mysqli_fetch_row($result);
+    ?>
+    <form method="post" action="xulydoidm.php">
+        <input type="hidden" value="<?php echo $row[0]; ?>" name="iddm">
+        <div class="form-group">
+            <label>Tên danh mục mới:</label>
+            <input type="text" value="<?php echo htmlspecialchars($row[1]); ?>" name="tendm" required>
+        </div>
+        <input type="submit" value="Cập nhật danh mục" class="btn-submit">
+    </form>
+    <?php
+}
+
+include_once("layout_bottom.php");
+giaiPhongBoNho($link, NULL);
 ?>
-</body>
-</html>
